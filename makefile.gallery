@@ -1,0 +1,25 @@
+HEIGHT := 256
+QUALITY := 99
+SPEED := 8
+
+BGCOLOR := 222222
+
+IMAGES := $(shell ls -1t *.avif 2>/dev/null)
+THUMBS := $(patsubst %.avif,.thumbs/%.avif,$(IMAGES))
+HTML_ENTRIES := $(foreach image,$(IMAGES),<a href="$(image)"><img src=".thumbs/$(basename $(image)).avif"></a>)
+HTML_PAGE := <!doctype html><html><body bgcolor="\#$(BGCOLOR)">$(HTML_ENTRIES)</body></html>
+
+.PHONY: all clean
+all: $(THUMBS) index.html
+
+.thumbs:
+	mkdir -p $@
+
+.thumbs/%.avif: %.avif | .thumbs
+	convert "$<" -resize x$(HEIGHT) -quality $(QUALITY) -define heic:speed=$(SPEED) "$@"
+
+index.html: $(IMAGES) $(THUMBS)
+	 $(file >$@,$(HTML_PAGE))
+
+clean:
+	rm -f $(THUMBS) index.html

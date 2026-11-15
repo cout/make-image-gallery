@@ -1,0 +1,16 @@
+#!/bin/sh
+
+set -e
+
+BASE="$(readlink -f "$(dirname "$0")")"
+
+DIR="$1"
+if [ -z "${DIR}" ]; then
+	echo "Usage: $0 <dir>" >&2
+	exit 1
+fi
+
+make -C "${DIR}" -f "${BASE}/makefile.convert" -j8
+echo $?
+make -C "${DIR}" -f "${BASE}/makefile.gallery" -j8
+echo $?

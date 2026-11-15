@@ -1,0 +1,24 @@
+QUALITY := 99
+SPEED := 8
+
+PNGS := $(wildcard *.png)
+AVIFS := $(patsubst %.png,%.avif,$(PNGS))
+
+.NOTINTERMEDIATE: .exif/%.parameters
+
+.PHONY: all
+
+all: $(AVIFS)
+
+.exif:
+	mkdir -p $@
+
+.exif/%.parameters: %.png | .exif
+	exiftool -b -Parameters "$<" > "$@"
+
+%.avif: %.png .exif/%.parameters
+	convert "$<" -quality $(QUALITY) -define heic:speed=$(SPEED) "$@.tmp"
+	exiftool -overwrite_original "-UserComment<=.exif/$(basename $<).parameters" "$@.tmp"
+	touch -r "$<" "$@.tmp"
+	mv "$@.tmp" "$@"
+	rm "$<"
