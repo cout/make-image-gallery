@@ -10,6 +10,7 @@ Usage:
 
 The script will:
 * convert all png files to avif
+* copy exif data into the avif files
 * REMOVE the original png files
 * create thumbnails of images in `<dir>/.thumbs`
 * create `<dir>/index.html` with thumbnails and links to the converted
